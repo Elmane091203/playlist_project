@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Playlist{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Modifier la playlist</h1>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_row(form.titre) }}
+            </div>
+            <div class="form-group">
+                {{ form_row(form.description) }}
+            </div>
+            {% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+                <button class="btn btn-primary">Enregistrer</button>
+            {% endif %}
+            <a href="{{ path('app_playlist_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %} 

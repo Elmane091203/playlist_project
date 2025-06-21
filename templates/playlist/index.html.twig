@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Playlists
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Liste des Playlists</h1>
+
+		{% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+			<a href="{{ path('app_playlist_new') }}" class="btn btn-primary mb-3">Créer une nouvelle playlist</a>
+		{% endif %}
+
+		{% for message in app.flashes('success') %}
+			<div class="alert alert-success">
+				{{ message }}
+			</div>
+		{% endfor %}
+		<div class="row">
+
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Nom</th>
+						<th>Utilisateur</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for playlist in playlists %}
+						<tr>
+							<td>{{ playlist.id }}</td>
+							<td>{{ playlist.titre }}</td>
+							<td>{{ playlist.user.nom }}</td>
+							<td>
+								<a href="{{ path('app_playlist_show', {'id': playlist.id}) }}" class="btn btn-info btn-sm">Voir</a>
+								{% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+									<a href="{{ path('app_playlist_edit', {'id': playlist.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+								{% endif %}
+								<form method="post" action="{{ path('app_playlist_delete', {'id': playlist.id}) }}" style="display: inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette playlist ?');">
+									<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ playlist.id) }}">
+									<button class="btn btn-danger btn-sm">Supprimer</button>
+								</form>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="5" style="text-align: center;">Aucune playlist trouvée</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+{% endblock %}

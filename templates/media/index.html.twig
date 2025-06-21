@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Médias{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Liste des Médias</h1>
+
+        {% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+            <a href="{{ path('app_media_new') }}" class="btn btn-primary mb-3">Ajouter un nouveau média</a>
+        {% endif %}
+
+        <div class="row">
+            {% for media in medias %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ media.titre }}</h5>
+                            <div class="youtube-embed-container">
+                                <iframe 
+                                    src="{{ media.url|youtube_embed }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    allowfullscreen
+                                    loading="lazy"
+                                    title="{{ media.titre }}">
+                                </iframe>
+                            </div>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Playlist: {{ media.playlist.titre }}<br>
+                                    Ajouté le {{ media.dateAjout|date('d/m/Y') }}
+                                </small>
+                            </p>
+                            <div class="btn-group">
+                                <a href="{{ path('app_media_show', {'id': media.id}) }}" class="btn btn-info mr-4">Voir</a>
+                                {% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+                                    <a href="{{ path('app_media_edit', {'id': media.id}) }}" class="btn btn-warning">Modifier</a>
+                                {% endif %}
+                                <form method="post" action="{{ path('app_media_delete', {'id': media.id}) }}" style="display: inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce média ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ media.id) }}">
+                                    <button class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p>Aucun média trouvé.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

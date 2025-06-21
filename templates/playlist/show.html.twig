@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Playlist
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h1>Playlist</h1>
+
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">{{ playlist.titre }}</h5>
+				<p class="card-text">{{ playlist.description }}</p>
+				<p class="card-text">
+					<small class="text-muted">Ajoutée le
+						{{ playlist.dateAjout|date('d/m/Y') }}</small>
+				</p>
+
+				<div class="mt-4">
+					<h6>Médias dans cette playlist</h6>
+					<div class="row">
+						{% for media in playlist.media %}
+							<div class="col-md-4 mb-4">
+								<div class="card">
+									<div class="card-body">
+										<h6 class="card-title">{{ media.titre }}</h6>
+										<p class="card-text">
+											<div class="youtube-embed-container">
+												<iframe src="{{ media.url|youtube_embed }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" title="{{ media.titre }}"></iframe>
+											</div>
+											<a href="{{ media.url }}" target="_blank" class="btn btn-sm btn-primary">Voir le média</a>
+										</p>
+										<p class="card-text">
+											<small class="text-muted">Ajouté le
+												{{ media.dateAjout|date('d/m/Y') }}</small>
+										</p>
+									</div>
+								</div>
+							</div>
+						{% else %}
+							<div class="col-12">
+								<p>Aucun média dans cette playlist.</p>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+
+				<div class="mt-3">
+					{% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+						<a href="{{ path('app_playlist_edit', {'id': playlist.id}) }}" class="btn btn-warning">Modifier</a>
+					{% endif %}
+					<a href="{{ path('app_playlist_index') }}" class="btn btn-secondary">Retour à la liste</a>
+					<form method="post" action="{{ path('app_playlist_delete', {'id': playlist.id}) }}" style="display: inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette playlist ?');">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ playlist.id) }}">
+						<button class="btn btn-danger">Supprimer</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

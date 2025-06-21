@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Média{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Média</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ media.titre }}</h5>
+                <div class="youtube-embed-container">
+                    <iframe 
+                        src="{{ media.url|youtube_embed }}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        loading="lazy"
+                        title="{{ media.titre }}">
+                    </iframe>
+                </div>
+                <p class="card-text">
+                    <a href="{{ media.url }}" target="_blank" class="btn btn-primary">Voir sur YouTube</a>
+                </p>
+                <p class="card-text">
+                    <small class="text-muted">
+                        Playlist: {{ media.playlist.titre }}<br>
+                        Ajouté le {{ media.dateAjout|date('d/m/Y') }}
+                    </small>
+                </p>
+
+                <div class="mt-3">
+                    {% if 'ROLE_ADMIN' not in user.roles and 'ROLE_USER' in user.roles %}
+                        <a href="{{ path('app_media_edit', {'id': media.id}) }}" class="btn btn-warning">Modifier</a>
+                    {% endif %}
+                    <a href="{{ path('app_media_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                    <form method="post" action="{{ path('app_media_delete', {'id': media.id}) }}" style="display: inline-block" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce média ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ media.id) }}">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 
